@@ -1,0 +1,35 @@
+.profile_info_wrapper
+    display: grid
+    grid-template-columns: 1fr 3fr 1fr
+    grid-template-rows: 1fr
+    grid-column-gap: 0px
+    grid-row-gap: 0px
+
+.profile_info
+    grid-area: 1 / 2 / 2 / 3
+    display: grid
+    grid-template-columns: 0.4fr 0.7fr
+    grid-template-rows: 0.3fr repeat(2, 1fr) 0.3fr
+    grid-column-gap: 1vw
+    grid-row-gap: 0px
+    border-radius: 20px
+    border-color: rgba(186,119,231,1)
+    background: rgb(188,185,231)
+    background: linear-gradient(90deg, rgba(175,187,226,1) 0%, rgba(186,186,221,1) 35%)
+    
+
+.profile_name
+    grid-area: 2 / 2 / 3 / 3
+    height: 15%
+    margin: auto 0
+.profile_email
+    grid-area: 3 / 2 / 4 / 3
+.profile_icon
+    grid-area: 2 / 1 / 4 / 2
+    font-size: 20vh
+    border-radius: 50%
+    background-color: #7a8fb3
+    text-align: center
+    padding-bottom: 2vh
+    margin: 0 auto
+    width: 70%
