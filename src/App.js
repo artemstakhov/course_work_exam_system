@@ -5,6 +5,8 @@ import ProfilePage from './containers/profile-page/profile-page';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Mainpage from './containers/main-page/main-page';
 import TestPage from './containers/test-page/test-page';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 function App() {
   return (

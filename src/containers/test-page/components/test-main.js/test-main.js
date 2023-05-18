@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import './test-main.sass';
+import Carousel from 'react-bootstrap/Carousel';
+import { Link } from "react-router-dom";
 
 
-function TestMain() {
+
+function TestMain(props) {
     const [questions, setQuestions] = useState([
         {
             text: 'What is the capital of France?',
@@ -15,7 +18,7 @@ function TestMain() {
             answers: [0],
         },
         {
-            text: 'What is the largest country by area?',
+            text: 'What is the best country in the world?',
             options: ['Russia', 'Canada', 'China', 'USA'],
             answers: [0, 1],
         },
@@ -94,8 +97,26 @@ function TestMain() {
             } else {
                 // Multiple correct answers question
                 const correctCount = correctAnswers.filter((answer) => userSelectedAnswers.includes(answer)).length;
+                let wrongCount = userSelectedAnswers.length - correctAnswers.length;
+                if (wrongCount < 0) {
+                    wrongCount = 0;
+                }
+                let wrongScore = 0;
+                if (correctAnswers.length === 2) {
+                    wrongScore = 0.5;
+                }
+                else {
+                    if (correctAnswers.length === 3) {
+                        wrongScore = 1;
+                    }
+                    else {
+                        wrongScore = 0;
+                    }
+                }
+                console.log(wrongScore, wrongCount, correctAnswers.length, userSelectedAnswers.length)
                 const scorePerAnswer = 1 / correctAnswers.length; // Calculate the score per correct answer
-                scoreIncrement = correctCount * scorePerAnswer;
+
+                scoreIncrement = correctCount * scorePerAnswer - (wrongCount * wrongScore);
             }
 
             return acc + scoreIncrement;
@@ -107,47 +128,69 @@ function TestMain() {
 
     return (
         <div className="test_main_wrapper">
+            <div className="test_main_title">{props.title}</div>
             {/* Проверяем, если isFinished равно true, то показываем только результат */}
             {isFinished ? (
                 <>
-                    <p>Your score is {score}</p>
-                    <p>Timer: {formattedTime}</p>
+                    <div className="test__center test__results">
+                        <p>Your score is {score}</p>
+                        <p>Timer: {formattedTime}</p>
+                        <Link style={{ all: 'unset' }} to='/'>
+                            <button className="test-btn">
+                                Go back
+                            </button>
+                        </Link>
+                    </div>
                 </>
             ) : (
                 <>
                     {/* Показываем только когда isStarted и isFinished равны false */}
                     {!isStarted && (
-                        <button onClick={handleStart}>Start</button>
+                        <div className="test__center">
+                            <button className="test__start__btn test-btn" onClick={handleStart}>
+                                Start
+                            </button>
+                        </div>
                     )}
                     {/* Показываем только когда isStarted равно true */}
                     {isStarted && (
                         <>
-                            <p>Timer: {formattedTime}</p>
-                            <ul>
-                                {questions.map((question, index) => (
-                                    <li key={index}>
-                                        <h2>{question.text}</h2>
-                                        <ul>
-                                            {question.options.map((option, optionIndex) => (
-                                                <li key={optionIndex}>
-                                                    <input
-                                                        type={question.answers.length > 1 ? 'checkbox' : 'radio'}
-                                                        name={`question-${index}`}
-                                                        value={optionIndex}
-                                                        checked={userAnswers[index].includes(optionIndex)}
-                                                        onChange={() => handleAnswerChange(index, optionIndex, question.answers.length > 1 ? 'checkbox' : 'radio')}
-                                                    />
-                                                    <label>{option}</label>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
-                                <li>
-                                    <button onClick={handleSubmit}>Submit</button>
-                                </li>
-                            </ul>
+                            <p className="test__timer">Timer: {formattedTime}</p>
+                            <div className="test__center">
 
+                                <Carousel interval={null} variant="dark" className="test__list">
+                                    {questions.map((question, index) => (
+                                        <Carousel.Item key={index} >
+                                        <div className="test__quest">
+                                            <h2>{question.text}</h2>
+                                            <ul>
+                                                {question.options.map((option, optionIndex) => (
+                                                    <li key={optionIndex}>
+                                                        <input
+                                                            type={question.answers.length > 1 ? 'checkbox' : 'radio'}
+                                                            name={`question-${index}`}
+                                                            value={optionIndex}
+                                                            checked={userAnswers[index].includes(optionIndex)}
+                                                            onChange={() => handleAnswerChange(index, optionIndex, question.answers.length > 1 ? 'checkbox' : 'radio')}
+                                                        />
+                                                        <label>{option}</label>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        </Carousel.Item>
+                                    ))}
+                                    <Carousel.Item>
+                                        <div className="test-submit__wrapper">
+                                            <button className="test-submit__btn test-btn" onClick={handleSubmit}>
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </Carousel.Item>
+                                </Carousel>
+
+
+                            </div>
                         </>
                     )}
                 </>

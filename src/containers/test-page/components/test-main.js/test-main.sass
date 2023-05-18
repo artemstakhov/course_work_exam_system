@@ -1,0 +1,49 @@
+.test_main_wrapper
+    display: grid
+    grid-template-columns: 15% 70% 15%
+    grid-template-rows: 10% 10% 80%
+    grid-column-gap: 0px
+    grid-row-gap: 0px
+    height: 70vh
+
+.test__timer
+    grid-area: 2 / 2 / 3 / 3
+    text-align: right
+.test_main_title
+    grid-area: 1 / 2 / 2 / 3
+    font-size: 22px
+    font-weight: 600
+.test__center 
+    grid-area: 3 / 2 / 3 / 3
+    display: flex
+    justify-content: center
+    align-items: center
+    .test__start__btn
+        width: 10%
+    .test__list
+        margin-top: 5vh
+        width: 70%
+        height: 80%
+        .test-submit__wrapper
+            display: flex
+            justify-content: center
+            align-items: center
+            height: 100%
+        .test__quest
+            margin-left: 5vw
+            margin-right: auto
+            margin-top: 10vh
+            margin-bottom: auto
+            
+.test-btn
+    border-radius: 10px
+    margin: 2vh auto
+    padding: 0.5vh 2vw
+    cursor: pointer
+.test__results
+    flex-direction: column
+
+.carousel-inner
+    height: 100%
+    .carousel-item
+        height: 100%

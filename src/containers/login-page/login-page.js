@@ -68,22 +68,17 @@ function LoginPage() {
             <h1>Увійти</h1>
             <input type="email" placeholder="Електронна пошта" />
             <input type="password" placeholder="Пароль" />
-            <a href="#">Забули пароль?</a>
             <button>Увійти</button>
           </form>
         </div>
         <div className="overlay-container">
           <div className="overlay">
             <div className="overlay-panel overlay-left">
-              <h1>Ласкаво просимо!</h1>
-              <p>Увійдіть, щоб продовжити користуватися нашими послугами</p>
               <button className="ghost" id="signIn" onClick={handleClick2}>
                 Увійти
               </button>
             </div>
             <div className="overlay-panel overlay-right">
-              <h1>Привіт, друг!</h1>
-              <p>Введіть свої персональні дані та розпочніть свій шлях з нами</p>
               <button className="ghost" id="signUp" onClick={handleClick1}>
                 Зареєструватися
               </button>

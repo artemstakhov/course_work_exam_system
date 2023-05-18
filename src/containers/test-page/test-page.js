@@ -6,7 +6,7 @@ function TestPage() {
     return(
         <>
             <Header />
-            <TestMain />
+            <TestMain title='Geography Test'/>
         </>
     );
 }
