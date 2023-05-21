@@ -1,23 +1,58 @@
+import { useEffect, useState } from 'react';
 import ResultBlock from '../../../../components/result-block/result-block';
 import './host-test.sass';
+import { decodeToken } from 'react-jwt';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function HostTest() {
-  const testList = [
-    { name: 'JavaScript Complete Test', total: 20, date: new Date('2023-05-05'), numOfPeople: 10 },
-    { name: 'ReactJS Basic Test', total: 20, date: new Date('2023-05-02'), numOfPeople: 8 },
-    { name: 'CSS Advanced Test', total: 8, date: new Date('2023-04-30'), numOfPeople: 5 },
-    { name: 'HTML5 Fundamentals', total: 20, date: new Date('2023-04-28'), numOfPeople: 12 },
-    { name: 'Node.js Essentials', total: 10, date: new Date('2023-04-25'), numOfPeople: 6 },
-    { name: 'Python Basics', total: 30, date: new Date('2023-04-20'), numOfPeople: 18 },
-    { name: 'TypeScript Mastery', total: 15, date: new Date('2023-04-15'), numOfPeople: 9 },
-    { name: 'Angular Framework', total: 20, date: new Date('2023-04-10'), numOfPeople: 11 },
-    { name: 'Bootstrap 5 Fundamentals', total: 12, date: new Date('2023-04-05'), numOfPeople: 7 },
-    { name: 'Vue.js Essentials', total: 25, date: new Date('2023-04-01'), numOfPeople: 15 },
-    { name: 'PHP Basics', total: 10, date: new Date('2023-03-30'), numOfPeople: 3 },
-    { name: 'Ruby on Rails', total: 15, date: new Date('2023-03-25'), numOfPeople: 6 },
-  ];
+  const [testList, setTestList] = useState([]);
+  const id = decodeToken(Cookies.get('token'))?._id;
+  const [userInfo, setUserInfo] = useState(null);
+  const [deleteTestId, setDeleteTestId] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  testList.sort((a, b) => b.date - a.date); // Сортируем по дате в обратном порядке
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3002/user/${id}`);
+        setUserInfo(response.data);
+        setTestList(response.data?.created_tests);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [id]);
+
+  const handleDeleteTest = async () => {
+    if (deleteTestId) {
+      try {
+        await axios.delete(`http://localhost:3002/tests/${deleteTestId}`);
+        // Обновить список тестов после удаления
+        setTestList(prevTestList => prevTestList.filter(test => test._id !== deleteTestId));
+        closeDialog();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const openDialog = (testId) => {
+    setDeleteTestId(testId);
+    setIsDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setDeleteTestId(null);
+  };
+
+  testList?.sort((a, b) => b.date - a.date); // Сортируем по дате в обратном порядке
 
   return (
     <div className="host_test_wrapper">
@@ -29,15 +64,27 @@ function HostTest() {
           <div className="host_test_stats host_test_header">К-сть запитань</div>
           <div className="host_test_people host_test_header">К-сть учасників</div>
         </li>
-        {testList.map((test, index) => (
+        {testList?.map((item, index) => (
           <li className="host_test_item" key={index}>
-            <div className="host_test_number">{index + 1}</div>
-            <div className="host_test_name">{test.name}</div>
-            <div className="host_test_stats">{test.total}</div>
-            <div className="host_test_people">{test.numOfPeople}</div>
+            <div className="host_test_number"><span>{index + 1}</span></div>
+            <div className="host_test_name"><span>{item.title}</span></div>
+            <div className="host_test_stats"><span>{item.questions.length}</span></div>
+            <div className="host_test_people"><span>{item.participants}</span></div>
+            <IconButton onClick={() => openDialog(item._id)}>
+              <FontAwesomeIcon icon={faTrash} />
+            </IconButton>
           </li>
         ))}
       </ul>
+
+      <Dialog open={isDialogOpen} onClose={closeDialog}>
+        <DialogTitle>Підтвердження видалення</DialogTitle>
+        <DialogContent>Ви впевнені, що хочете видалити цей тест?</DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog}>Відміна</Button>
+          <Button onClick={handleDeleteTest} color="error">Видалити</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

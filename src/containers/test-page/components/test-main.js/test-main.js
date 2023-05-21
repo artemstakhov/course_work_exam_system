@@ -1,30 +1,36 @@
 import { useState, useEffect } from "react";
 import './test-main.sass';
 import Carousel from 'react-bootstrap/Carousel';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+import { decodeToken } from "react-jwt";
+import Cookies from "js-cookie";
 
 
 
-function TestMain(props) {
-    const [questions, setQuestions] = useState([
-        {
-            text: 'What is the capital of France?',
-            options: ['Paris', 'Berlin', 'London', 'Madrid'],
-            answers: [0],
-        },
-        {
-            text: 'What is the highest mountain in the world?',
-            options: ['Mount Everest', 'K2', 'Makalu', 'Cho Oyu'],
-            answers: [0],
-        },
-        {
-            text: 'What is the best country in the world?',
-            options: ['Russia', 'Canada', 'China', 'USA'],
-            answers: [0, 1],
-        },
-    ]);
+function TestMain() {
+    const { id } = useParams();
+    const [testItemData, setTestItemData] = useState();
+    const [questions, setQuestions] = useState([]);
+    const userId = decodeToken(Cookies.get('token'))?._id;
 
-    const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill([]));
+    useEffect(() => {
+        const fetchTest = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3002/tests/${id}`);
+                setTestItemData(response.data);
+                setQuestions(response.data?.questions || []);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchTest();
+    }, [id]);
+
+
+
+    const [userAnswer, setUserAnswer] = useState(Array.from({ length: questions.length }, () => [0]));
     const [score, setScore] = useState(null);
     const [isStarted, setIsStarted] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
@@ -42,79 +48,91 @@ function TestMain(props) {
     }, [isStarted]);
     //checkbox works
     // const handleAnswerChange = (questionIndex, answerIndex) => {
-    //     const currentAnswers = userAnswers[questionIndex];
-    //     const newAnswers = currentAnswers.includes(answerIndex)
-    //         ? currentAnswers.filter((index) => index !== answerIndex)
-    //         : [...currentAnswers, answerIndex];
-    //     setUserAnswers((prevAnswers) => [
-    //         ...prevAnswers.slice(0, questionIndex),
-    //         newAnswers,
-    //         ...prevAnswers.slice(questionIndex + 1),
+    //     const currentAnswer = userAnswer[questionIndex];
+    //     const newAnswer = currentAnswer.includes(answerIndex)
+    //         ? currentAnswer.filter((index) => index !== answerIndex)
+    //         : [...currentAnswer, answerIndex];
+    //     setUserAnswer((prevAnswer) => [
+    //         ...prevAnswer.slice(0, questionIndex),
+    //         newAnswer,
+    //         ...prevAnswer.slice(questionIndex + 1),
     //     ]);
     // };
     //radio works
     // const handleAnswerChange = (questionIndex, answerIndex) => {
-    //     const newAnswers = [...userAnswers];
-    //     newAnswers[questionIndex] = [answerIndex];
-    //     setUserAnswers(newAnswers);
+    //     const newAnswer = [...userAnswer];
+    //     newAnswer[questionIndex] = [answerIndex];
+    //     setUserAnswer(newAnswer);
     // };
     const handleAnswerChange = (questionIndex, answerIndex, questionType) => {
         if (questionType === "checkbox") {
-            const currentAnswers = userAnswers[questionIndex];
-            const newAnswers = currentAnswers.includes(answerIndex)
-                ? currentAnswers.filter((index) => index !== answerIndex)
-                : [...currentAnswers, answerIndex];
-            setUserAnswers((prevAnswers) => [
-                ...prevAnswers.slice(0, questionIndex),
-                newAnswers,
-                ...prevAnswers.slice(questionIndex + 1),
-            ]);
+            const currentAnswer = userAnswer[questionIndex];
+            if (currentAnswer === undefined) {
+                // Если currentAnswer равно undefined, создайте новый массив с answerIndex
+                const newAnswer = [answerIndex];
+                setUserAnswer((prevAnswer) => {
+                    const updatedAnswer = [...prevAnswer];
+                    updatedAnswer[questionIndex] = newAnswer;
+                    return updatedAnswer;
+                });
+            } else {
+                const newAnswer = currentAnswer.includes(answerIndex)
+                    ? currentAnswer.filter((index) => index !== answerIndex)
+                    : [...currentAnswer, answerIndex];
+                setUserAnswer((prevAnswer) => {
+                    const updatedAnswer = [...prevAnswer];
+                    updatedAnswer[questionIndex] = newAnswer;
+                    return updatedAnswer;
+                });
+            }
         } else if (questionType === "radio") {
-            const newAnswers = [...userAnswers];
-            newAnswers[questionIndex] = [answerIndex];
-            setUserAnswers(newAnswers);
+            const newAnswer = [...userAnswer];
+            newAnswer[questionIndex] = [answerIndex];
+            setUserAnswer(newAnswer);
         }
     };
+
+
 
     const handleStart = () => {
         setIsStarted(true);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsStarted(false);
         const newScore = questions.reduce((acc, question, index) => {
-            const userSelectedAnswers = userAnswers[index];
-            const correctAnswers = question.answers;
+            const userSelectedAnswer = userAnswer[index];
+            const correctAnswer = question.answer;
             let scoreIncrement = 0;
 
-            // Check if all correct answers were selected for this question
-            const isAllCorrectSelected = correctAnswers.every((answer) => userSelectedAnswers.includes(answer));
+            // Check if all correct answer were selected for this question
+            const isAllCorrectSelected = correctAnswer.every((answer) => userSelectedAnswer?.includes(answer));
 
             // Calculate the score increment based on the question type
-            if (question.answers.length === 1) {
+            if (question.answer.length === 1) {
                 // Single correct answer question
                 scoreIncrement = isAllCorrectSelected ? 1 : 0;
             } else {
-                // Multiple correct answers question
-                const correctCount = correctAnswers.filter((answer) => userSelectedAnswers.includes(answer)).length;
-                let wrongCount = userSelectedAnswers.length - correctAnswers.length;
+                // Multiple correct answer question
+                const correctCount = correctAnswer?.filter((answer) => userSelectedAnswer?.includes(answer)).length;
+                let wrongCount = userSelectedAnswer.length - correctAnswer.length;
                 if (wrongCount < 0) {
                     wrongCount = 0;
                 }
                 let wrongScore = 0;
-                if (correctAnswers.length === 2) {
+                if (correctAnswer.length === 2) {
                     wrongScore = 0.5;
                 }
                 else {
-                    if (correctAnswers.length === 3) {
+                    if (correctAnswer.length === 3) {
                         wrongScore = 1;
                     }
                     else {
                         wrongScore = 0;
                     }
                 }
-                console.log(wrongScore, wrongCount, correctAnswers.length, userSelectedAnswers.length)
-                const scorePerAnswer = 1 / correctAnswers.length; // Calculate the score per correct answer
+                console.log(wrongScore, wrongCount, correctAnswer.length, userSelectedAnswer.length)
+                const scorePerAnswer = 1 / correctAnswer.length; // Calculate the score per correct answer
 
                 scoreIncrement = correctCount * scorePerAnswer - (wrongCount * wrongScore);
             }
@@ -122,14 +140,35 @@ function TestMain(props) {
             return acc + scoreIncrement;
         }, 0);
 
-        setScore(newScore);
-        setIsFinished(true); // Устанавливаем isFinished в true, когда результаты отображаются
+        await setScore(newScore);
+        setIsFinished(true);
+        axios.post(`http://localhost:3002/user/complete/${userId}`, {
+            test: id,
+            result: newScore,
+            time: formattedTime,
+            date: new Date()
+        })
+            .then(response => {
+                console.log('Post request successful:', response.data);
+            })
+            .catch(error => {
+                console.error('Error during post request:', error);
+            });
+        // Устанавливаем isFinished в true, когда результаты отображаются
     };
-
+    if (!testItemData) {
+        return <div>Loading...</div>;
+    }
     return (
         <div className="test_main_wrapper">
-            <div className="test_main_title">{props.title}</div>
+            <div className="test_main_title">{testItemData.title}</div>
+            <div className="test_main_descr">{testItemData.description}</div>
+            <div className="test_main_quest">Кількість питань: {testItemData?.questions.length}</div>
+            <div className="test_main_img">
+                <img src={testItemData.img} alt={`Photo ${testItemData.img}`} />
+            </div>
             {/* Проверяем, если isFinished равно true, то показываем только результат */}
+            
             {isFinished ? (
                 <>
                     <div className="test__center test__results">
@@ -161,23 +200,23 @@ function TestMain(props) {
                                 <Carousel interval={null} variant="dark" className="test__list">
                                     {questions.map((question, index) => (
                                         <Carousel.Item key={index} >
-                                        <div className="test__quest">
-                                            <h2>{question.text}</h2>
-                                            <ul>
-                                                {question.options.map((option, optionIndex) => (
-                                                    <li key={optionIndex}>
-                                                        <input
-                                                            type={question.answers.length > 1 ? 'checkbox' : 'radio'}
-                                                            name={`question-${index}`}
-                                                            value={optionIndex}
-                                                            checked={userAnswers[index].includes(optionIndex)}
-                                                            onChange={() => handleAnswerChange(index, optionIndex, question.answers.length > 1 ? 'checkbox' : 'radio')}
-                                                        />
-                                                        <label>{option}</label>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                            <div className="test__quest">
+                                                <h2>{question.text}</h2>
+                                                <ul style={{listStyleType: 'none', paddingLeft: '0'}}>
+                                                    {question.options?.map((option, optionIndex) => (
+                                                        <li key={optionIndex} style={{display: 'flex', justifyContent: 'start', gap: '0.3vw'}}>
+                                                            <input
+                                                                type={question.answer.length > 1 ? 'checkbox' : 'radio'}
+                                                                name={`question-${index}`}
+                                                                value={optionIndex}
+                                                                checked={userAnswer[index]?.includes(optionIndex)}
+                                                                onChange={() => handleAnswerChange(index, optionIndex, question.answer.length > 1 ? 'checkbox' : 'radio')}
+                                                            />
+                                                            <label style={{paddingBottom: '2px'}}>{option}</label>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
                                         </Carousel.Item>
                                     ))}
                                     <Carousel.Item>

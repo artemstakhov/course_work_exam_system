@@ -4,7 +4,6 @@
     grid-template-rows: 0.1fr 1fr
     grid-column-gap: 0px
     grid-row-gap: 0px
-    margin-bottom: 5vh
      
 
 .ul_title 
@@ -44,11 +43,13 @@
         
     .host_test_item
         display: grid
-        grid-template-columns: 0.1fr 2fr repeat(2, 0.4fr)
+        grid-template-columns: 6% 60% 13% 13% 8%
         grid-template-rows: auto
         grid-column-gap: 0px
         grid-row-gap: 0px
         padding: 1vh 0
+        span
+            display: block
         .host_test_number
             grid-area: 1 / 1 / 2 / 2
             font-size: 20px
@@ -62,4 +63,11 @@
         .host_test_people
             grid-area: 1 / 4 / 2 / 5
             text-align: center
-        
+.host_test_number, .host_test_stats, .host_test_people
+    display: flex
+    justify-content: center
+    align-items: center 
+.host_test_name
+    display: flex
+    justify-content: start
+    align-items: center 

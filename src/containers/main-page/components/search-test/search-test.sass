@@ -11,13 +11,30 @@
         text-align: center
         font-size: 24px
 
-    input 
+    .input_wrapper 
         grid-area: 2 / 2 / 2 / 3
         border: 2px solid #5ebb87
         border-radius: 15px
         outline-color: #3a5535
-        width: 96%
-        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        input
+            width: 95%
+            height: 100%
+            border: none
+            outline: none
+            border-radius: 15px
+        button
+            width: 5%
+            height: 100%
+            border: none
+            outline: none
+            border-radius: 15px
+            margin: 0
+            padding: 0
+            font-size: 20px
+            background: none
     input:focus::placeholder 
         color: transparent
 

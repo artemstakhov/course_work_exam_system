@@ -1,23 +1,29 @@
+import { useEffect, useState } from 'react';
 import ResultBlock from '../../../../components/result-block/result-block';
 import './done-test.sass';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { decodeToken } from 'react-jwt';
 
 function DoneTest() {
-    const testList = [
-        { name: 'JavaScript Complete Test', correct: 10, total: 20, date: new Date('2023-05-05') },
-        { name: 'ReactJS Basic Test', correct: 15, total: 20, date: new Date('2023-05-02') },
-        { name: 'CSS Advanced Test', correct: 2, total: 8, date: new Date('2023-04-30') },
-        { name: 'HTML5 Fundamentals', correct: 18, total: 20, date: new Date('2023-04-28') },
-        { name: 'Node.js Essentials', correct: 8, total: 10, date: new Date('2023-04-25') },
-        { name: 'Python Basics', correct: 25, total: 30, date: new Date('2023-04-20') },
-        { name: 'TypeScript Mastery', correct: 12, total: 15, date: new Date('2023-04-15') },
-        { name: 'Angular Framework', correct: 17, total: 20, date: new Date('2023-04-10') },
-        { name: 'Bootstrap 5 Fundamentals', correct: 9, total: 12, date: new Date('2023-04-05') },
-        { name: 'Vue.js Essentials', correct: 22, total: 25, date: new Date('2023-04-01') },
-        { name: 'PHP Basics', correct: 7, total: 10, date: new Date('2023-03-30') },
-        { name: 'Ruby on Rails', correct: 13, total: 15, date: new Date('2023-03-25') },
-        ];
+    const id = decodeToken(Cookies.get('token'))?._id;
+    const [userInfo, setUserInfo] = useState(null);
+    useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3002/user/${id}`);
+        setUserInfo(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-        testList.sort((a, b) => b.date - a.date); // Сортируем по дате в обратном порядке
+    fetchUserInfo();
+  }, [id]);
+    const testList = userInfo?.passed_tests;
+    console.log(testList)
+        console.log(testList)
+        testList?.sort((a, b) => b.date - a.date); // Сортируем по дате в обратном порядке
 
         return (
             <div className="done_test_wrapper">
@@ -29,12 +35,12 @@ function DoneTest() {
                     <div className="done_test_stats done_test_header">Результат</div>
                     <div className="done_test_people done_test_header">Результат у %</div>
                 </li>
-                    {testList.map((test, index) => (
+                    {testList?.map((item, index) => (
                         <li className="done_test_item" key={index}>
                             <div className="done_test_number">{index + 1}</div>
-                            <div className="done_test_name">{test.name}</div>
-                            <div className="done_test_stats">{test.correct} з {test.total}</div>
-                            <ResultBlock percentage={((test.correct / test.total) * 100)%1===0 ? ((test.correct / test.total) * 100) : ((test.correct / test.total) * 100).toFixed(2)} />
+                            <div className="done_test_name">{item.test.title}</div>
+                            <div className="done_test_stats">{item.result} з {item.test?.questions.length}</div>
+                            <ResultBlock percentage={((item.result / item.test.questions.length) * 100)%1===0 ? ((item.result / item.test.questions.length) * 100) : ((item.result / item.test.questions.length) * 100).toFixed(2)} />
                         </li>
                     ))}
                 </ul>
