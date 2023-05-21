@@ -157,7 +157,7 @@ function TestMain() {
         // Устанавливаем isFinished в true, когда результаты отображаются
     };
     if (!testItemData) {
-        return <div>Loading...</div>;
+        return <div style={{color:'#fff'}}>Loading...</div>;
     }
     return (
         <div className="test_main_wrapper">
@@ -197,7 +197,7 @@ function TestMain() {
                             <p className="test__timer">Timer: {formattedTime}</p>
                             <div className="test__center">
 
-                                <Carousel interval={null} variant="dark" className="test__list">
+                                <Carousel interval={null} className="test__list">
                                     {questions.map((question, index) => (
                                         <Carousel.Item key={index} >
                                             <div className="test__quest">
@@ -206,6 +206,7 @@ function TestMain() {
                                                     {question.options?.map((option, optionIndex) => (
                                                         <li key={optionIndex} style={{display: 'flex', justifyContent: 'start', gap: '0.3vw'}}>
                                                             <input
+                                                                style={{cursor: 'pointer'}}
                                                                 type={question.answer.length > 1 ? 'checkbox' : 'radio'}
                                                                 name={`question-${index}`}
                                                                 value={optionIndex}

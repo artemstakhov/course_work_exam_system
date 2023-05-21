@@ -259,16 +259,16 @@ function CreatePage() {
                 <FontAwesomeIcon icon={faPlus} />
               </IconButton>
             )}
-            <Button style={{color:'#000',fontSize: '16px',backgroundColor: '#729fdf'}} onClick={() => handleRemoveQuestion(questionIndex)}>
+            <Button style={{color:'#fff',fontSize: '16px',backgroundColor: '#729fdf'}} onClick={() => handleRemoveQuestion(questionIndex)}>
               Remove Question
             </Button>
           </div>
         ))}
         <div className="btn__wrapper">
-        <Button style={{color:'#000',fontSize: '16px', backgroundColor: '#729fdf'}} onClick={handleAddQuestion}>
+        <Button style={{color:'#fff',fontSize: '16px', backgroundColor: '#729fdf'}} onClick={handleAddQuestion}>
           Add question
         </Button>
-        <Button className='submit_btn' type="submit">Create test</Button>
+        <Button style={{color:'#fff',fontSize: '16px',backgroundColor: '#729fdf'}} className='submit_btn' type="submit">Create test</Button>
         </div>
       </form>
     </div>
