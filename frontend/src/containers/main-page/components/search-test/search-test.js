@@ -14,7 +14,7 @@ function SearchTest() {
   const [privateKey, setPrivateKey] = useState('');
   const [userTests, setUserTests] = useState([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const id = decodeToken(Cookies.get('token'))._id;
+  const id = decodeToken(Cookies.get('token'))?._id;
   useEffect(() => {
     const fetchTests = async () => {
       try {
@@ -31,7 +31,7 @@ function SearchTest() {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`http://localhost:3002/user/${id}`);
-        const passedTestsIds = response.data.passed_tests.map(test => test.test._id);
+        const passedTestsIds = response.data.passed_tests.map(test => test.test?._id);
         setUserTests(passedTestsIds);
       } catch (error) {
         console.log(error);
@@ -48,11 +48,11 @@ function SearchTest() {
 const handleButtonClick = () => {
   const matchedTest = testItems.find(test => test.privateKey === privateKey);
 
-  if (matchedTest && !userTests.includes(matchedTest._id)) {
+  if (matchedTest && !userTests.includes(matchedTest?._id)) {
     // Переход на страницу теста
-    window.location.href = `/test/${matchedTest._id}`;
+    window.location.href = `/test/${matchedTest?._id}`;
   } else {
-    if (matchedTest && userTests.includes(matchedTest._id)) {
+    if (matchedTest && userTests.includes(matchedTest?._id)) {
       setShowSnackbar(true);
     } else {
       console.log('Немає тестів з таким ключом');

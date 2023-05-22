@@ -9,7 +9,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
 function PublicTest() {
-  const id = decodeToken(Cookies.get('token'))._id;
+  const id = decodeToken(Cookies.get('token'))?._id;
   const [testItems, setTestItems] = useState([]);
   const [user, setUser] = useState([]);
   const [userTests, setUserTests] = useState([]);

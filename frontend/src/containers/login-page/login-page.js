@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { TextField, Button, FormControlLabel, Radio, RadioGroup, Switch, InputLabel } from '@mui/material';
+import { TextField, Button, FormControlLabel, Radio, RadioGroup, Switch, InputLabel, InputAdornment, IconButton, OutlinedInput } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
 import './login-page.sass';
 
 function LoginForm() {
@@ -12,7 +15,14 @@ function LoginForm() {
   const [teacher, setTeacher] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
 
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  
   const handleFormSubmit = (event) => {
     event.preventDefault();
     if (isRegister) {
@@ -50,13 +60,15 @@ function LoginForm() {
         });
     }
   };
-
+  const [errorLength, setErrorLength] = useState(false);
+  let styles = isRegister ? 'reg-log__form' : 'reg-log__form heigth40';
   return (
     <div className="reg-log__wrapper">
-      <form className='reg-log__form' onSubmit={handleFormSubmit}>
+      <form className={styles} onSubmit={handleFormSubmit}>
         <FormControlLabel
           control={<Switch checked={isRegister} onChange={(e) => setIsRegister(e.target.checked)} />}
           label={isRegister ? 'Sign up' : 'Log in' }
+          style={{color: '#000'}}
         />
         {!isRegister ? (
           <>
@@ -66,17 +78,35 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              error={email.length===0}
+              onFocus={() => {setErrorLength(true)}}
+              onBlur={() =>{setErrorLength(false)}}
+              error={errorLength && email.length===0}
               autoComplete="username"
             />
             <InputLabel>Password</InputLabel>
-            <TextField
-              type="password"
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              error={password.length===0}
+              style={{width: '63%'}}
+              onFocus={() => {setErrorLength(true)}}
+              onBlur={() =>{setErrorLength(false)}}
+              error={errorLength && password.length===0}
               autoComplete="current-password"
+              endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </InputAdornment>
+            }
             />
           </>
         ) : (
@@ -86,7 +116,9 @@ function LoginForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              error={name.length===0}
+              onFocus={() => {setErrorLength(true)}}
+              onBlur={() =>{setErrorLength(false)}}
+              error={errorLength && name.length===0}
               autoComplete="name"
             />
             <InputLabel>Email</InputLabel>
@@ -95,17 +127,35 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              error={email.length===0}
+              onFocus={() => {setErrorLength(true)}}
+              onBlur={() =>{setErrorLength(false)}}
+              error={errorLength && email.length===0}
               autoComplete="username"
             />
             <InputLabel>Password</InputLabel>
-            <TextField
-              type="password"
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              error={password.length===0}
+              style={{width: '63%'}}
               autoComplete="new-password"
+              onFocus={() => {setErrorLength(true)}}
+              onBlur={() =>{setErrorLength(false)}}
+              error={errorLength && password.length===0}
+              endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </InputAdornment>
+            }
             />
             <InputLabel>Role</InputLabel>
             <RadioGroup

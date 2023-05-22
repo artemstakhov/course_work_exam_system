@@ -32,6 +32,7 @@ function DoneTest() {
                 <li className="done_test_item">
                     <div className="done_test_number done_test_header"></div>
                     <div className="done_test_name done_test_header">Назва тесту</div>
+                    <div className="done_test_time done_test_header">Час</div>
                     <div className="done_test_stats done_test_header">Результат</div>
                     <div className="done_test_people done_test_header">Результат у %</div>
                 </li>
@@ -39,6 +40,7 @@ function DoneTest() {
                         <li className="done_test_item" key={index}>
                             <div className="done_test_number">{index + 1}</div>
                             <div className="done_test_name">{item.test.title}</div>
+                            <div className="done_test_time">{item.time}</div>
                             <div className="done_test_stats">{item.result} з {item.test?.questions.length}</div>
                             <ResultBlock percentage={((item.result / item.test.questions.length) * 100)%1===0 ? ((item.result / item.test.questions.length) * 100) : ((item.result / item.test.questions.length) * 100).toFixed(2)} />
                         </li>

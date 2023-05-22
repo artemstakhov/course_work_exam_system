@@ -70,6 +70,11 @@ function Header() {
                         Logout
                     </Button>
                 </Link>}
+                {!token && <Link to='/login' style={{all: 'unset'}}>
+                    <Button >
+                        Login
+                    </Button>
+                </Link>}
                 
             </div>
 

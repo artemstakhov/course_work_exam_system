@@ -43,7 +43,7 @@
         
     .done_test_item
         display: grid
-        grid-template-columns: 0.1fr 2fr repeat(2, 0.4fr)
+        grid-template-columns: 5% 50% 15% 15% 15%
         grid-template-rows: auto
         grid-column-gap: 0px
         grid-row-gap: 0px
@@ -56,8 +56,11 @@
             font-weight: 500
             font-size: 20px
         .done_test_stats
+            grid-area: 1 / 4 / 2 / 5
+            
+        .done_test_time
             grid-area: 1 / 3 / 2 / 4
         .result_block
-            grid-area: 1 / 4 / 2 / 5
+            grid-area: 1 / 5 / 2 / 6
             width: 100%
         
