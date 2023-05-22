@@ -47,9 +47,9 @@ export const register = async (reg, res) => {
 export const login = async (reg, res) => {
   try {
     const user = await User.findOne({ email: reg.body.email });
-    if (!user) return res.status(400).json({ message: "Перевірте чи коректно введені данні" });
+    if (!user) return res.status(400).json({ message: "Перевірте чи коректно введені дані" });
     const isPasswordCorrect = await bcrypt.compare(reg.body.password, user.password);
-    if (!isPasswordCorrect) res.status(400).json({ message: "Перевірте чи коректно введені данні" })
+    if (!isPasswordCorrect) res.status(400).json({ message: "Перевірте чи коректно введені дані" })
 
     const token = jwt.sign(
       {
@@ -84,15 +84,15 @@ export const logout = (req, res) => {
   const token = req.headers.authorization || req.query.token || req.body.token;
 
   if (!token) {
-    return res.status(401).json({ message: "Токен отсутствует" });
+    return res.status(401).json({ message: "Токен відсутній" });
   }
 
   try {
    
     const decodedToken = jwt.verify(token, "secret123");
 
-    res.json({ message: "Логаут успешный" });
+    res.json({ message: "Логаут успішний" });
   } catch (err) {
-    res.status(401).json({ message: "Недействительный токен" });
+    res.status(401).json({ message: "Недійсний токен" });
   }
 };
