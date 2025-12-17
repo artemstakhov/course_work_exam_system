@@ -1,84 +1,85 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import './search-test.sass';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import './search-test.scss';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { decodeToken } from 'react-jwt';
 import Cookies from 'js-cookie';
+import { fetchTests } from '../../../../store/slices/testsSlice';
+import { getUserById } from '../../../../store/slices/authSlice';
+import { useState } from 'react';
 
 function SearchTest() {
-  const [testItems, setTestItems] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [privateKey, setPrivateKey] = useState('');
-  const [userTests, setUserTests] = useState([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
+  
+  const { tests } = useSelector(state => state.tests);
+  const { user } = useSelector(state => state.auth);
   const id = decodeToken(Cookies.get('token'))?._id;
-  useEffect(() => {
-    const fetchTests = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3002/tests`);
-        setTestItems(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
 
-    fetchTests();
-  }, []);
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3002/user/${id}`);
-        const passedTestsIds = response.data.passed_tests.map(test => test.test?._id);
-        setUserTests(passedTestsIds);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUser();
-  }, []);
+    dispatch(fetchTests());
+    if (id) {
+      dispatch(getUserById(id));
+    }
+  }, [dispatch, id]);
 
   const handleSnackbarClose = () => {
     setShowSnackbar(false);
   };
 
+  const handleButtonClick = () => {
+    const matchedTest = tests.find(test => test.privateKey === privateKey);
+    const passedTestsIds = user?.passed_tests?.map(test => test.test?._id) || [];
 
-const handleButtonClick = () => {
-  const matchedTest = testItems.find(test => test.privateKey === privateKey);
-
-  if (matchedTest && !userTests.includes(matchedTest?._id)) {
-    // Переход на страницу теста
-    window.location.href = `/test/${matchedTest?._id}`;
-  } else {
-    if (matchedTest && userTests.includes(matchedTest?._id)) {
-      setShowSnackbar(true);
+    if (matchedTest && !passedTestsIds.includes(matchedTest?._id)) {
+      navigate(`/test/${matchedTest?._id}`);
     } else {
-      console.log('Немає тестів з таким ключом');
+      if (matchedTest && passedTestsIds.includes(matchedTest?._id)) {
+        setShowSnackbar(true);
+      } else {
+        console.log('Немає тестів з таким ключом');
+      }
     }
-    // Вывод сообщения об отсутствии теста с таким ключом
-
-  }
-};
+  };
 
 return (
   <>
     <div className="search_wrapper">
-      <span>Пошук тестів по тегу</span>
-      <div style={{ backgroundColor: '#fff' }} className="input_wrapper">
+      <span>Знайди свій тест</span>
+      <p className="search_subtitle">Введіть приватний ключ для доступу до закритого тесту</p>
+      <div className="input_wrapper">
         <input
           type="text"
-          placeholder="Введіть privateKey:"
+          placeholder="Введіть приватний ключ..."
           value={privateKey}
           onChange={event => setPrivateKey(event.target.value)}
         />
-        <button onClick={handleButtonClick}><FontAwesomeIcon style={{ color: '#000' }} icon={faMagnifyingGlass} /></button>
+        <button onClick={handleButtonClick}>
+          <FontAwesomeIcon icon={faMagnifyingGlass} />
+          <span style={{marginLeft: '8px'}}>Знайти</span>
+        </button>
       </div>
     </div>
-    <Snackbar style={{marginLeft: '40%'}} open={showSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
-      <MuiAlert  severity="warning" onClose={handleSnackbarClose}>
-        You already passed this test
+    <Snackbar 
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={showSnackbar} 
+      autoHideDuration={3000} 
+      onClose={handleSnackbarClose}
+    >
+      <MuiAlert 
+        elevation={6}
+        variant="filled"
+        severity="warning" 
+        onClose={handleSnackbarClose}
+        sx={{ borderRadius: 2 }}
+      >
+        Ви вже проходили цей тест
       </MuiAlert>
     </Snackbar>
   </>

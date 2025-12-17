@@ -1,0 +1,166 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.modern-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-lg $spacing-2xl;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-2xl;
+    
+    @include respond-to('md') {
+      padding: $spacing-md $spacing-xl;
+      gap: $spacing-xl;
+    }
+  }
+  
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    
+    img {
+      height: 48px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    &-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      
+      @include respond-to('md') {
+        display: none;
+      }
+    }
+    
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+  
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2xl;
+    
+    @include respond-to('lg') {
+      display: none;
+    }
+  }
+  
+  &__nav-link {
+    font-size: 1rem;
+    font-weight: 500;
+    color: $text-secondary;
+    text-decoration: none;
+    position: relative;
+    padding: $spacing-sm 0;
+    transition: all 0.3s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, $primary-color 0%, $primary-dark 100%);
+      transition: width 0.3s ease;
+    }
+    
+    &:hover {
+      color: $primary-color;
+      
+      &::after {
+        width: 100%;
+      }
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+  }
+  
+  &__create-btn {
+    text-decoration: none;
+    
+    .create-test-btn {
+      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%) !important;
+      color: white !important;
+      font-weight: 600 !important;
+      text-transform: none !important;
+      padding: $spacing-sm $spacing-xl !important;
+      border-radius: $border-radius-md !important;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+      transition: all 0.3s ease !important;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+      }
+    }
+  }
+  
+  &__avatar {
+    width: 44px !important;
+    height: 44px !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    }
+  }
+  
+  &__menu {
+    .MuiMenuItem-root {
+      padding: $spacing-md $spacing-xl !important;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(99, 102, 241, 0.08) !important;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+.login-btn {
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  padding: $spacing-sm $spacing-2xl !important;
+  border-radius: $border-radius-md !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+  }
+}

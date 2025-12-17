@@ -1,6 +1,6 @@
 import Header from '../../components/header/header';
-import TestMain from './components/test-main.js/test-main';
-import './test-page.sass';
+import TestMain from './components/test-main/test-main';
+import './test-page.scss';
 
 function TestPage() {
     return(

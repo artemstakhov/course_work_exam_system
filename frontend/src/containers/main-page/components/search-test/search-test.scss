@@ -1,0 +1,104 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.search_wrapper {
+  padding: $spacing-3xl $spacing-2xl;
+  max-width: 900px;
+  margin: 0 auto;
+  
+  > span {
+    display: block;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-sm;
+    letter-spacing: -0.5px;
+  }
+  
+  .search_subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: $text-secondary;
+    margin-bottom: $spacing-2xl;
+    font-weight: 500;
+  }
+  
+  .input_wrapper {
+    @include flex-between;
+    background: $white;
+    border: 2px solid transparent;
+    border-radius: $border-radius-xl;
+    padding: $spacing-sm;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all $transition-fast;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: $border-radius-xl;
+      padding: 2px;
+      background: linear-gradient(135deg, $primary-color, $primary-dark);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity $transition-fast;
+    }
+    
+    &:focus-within {
+      box-shadow: 0 12px 48px rgba(99, 102, 241, 0.15);
+      
+      &::before {
+        opacity: 1;
+      }
+    }
+    
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: $spacing-md $spacing-lg;
+      font-size: 1.1rem;
+      background: transparent;
+      font-weight: 500;
+      
+      &::placeholder {
+        color: $gray-400;
+        font-weight: 400;
+      }
+      
+      &:focus::placeholder {
+        color: transparent;
+      }
+    }
+    
+    button {
+      @include button-base;
+      background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+      color: $white;
+      padding: $spacing-md $spacing-2xl;
+      border-radius: $border-radius-md;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-dark, 5%) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+

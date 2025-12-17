@@ -1,0 +1,150 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.done_test_wrapper {
+  padding: $spacing-2xl;
+  max-width: 1400px;
+  margin: 0 auto;
+  
+  .ul_title {
+    font-size: $font-size-3xl;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-lg;
+    border-bottom: 4px solid #10b981;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    
+    &::before {
+      content: '✅';
+      font-size: $font-size-3xl;
+    }
+  }
+}
+
+.done_test {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: #ffffff;
+  border-radius: $border-radius-xl;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+  border: 2px solid #10b981;
+  overflow: hidden;
+  
+  &.empty-state {
+    padding: $spacing-3xl;
+    text-align: center;
+    
+    p {
+      color: #6b7280;
+      font-size: $font-size-xl;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+  
+  &:empty::after {
+    content: 'Ви ще не проходили жодного тесту';
+    display: block;
+    text-align: center;
+    color: #6b7280;
+    padding: $spacing-3xl;
+    font-size: $font-size-xl;
+    font-weight: 500;
+    background: #f9fafb;
+  }
+  
+  .done_test_item {
+    display: grid;
+    grid-template-columns: 60px 1fr 120px 150px 120px;
+    gap: $spacing-lg;
+    align-items: center;
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 2px solid #d1d5db;
+    background: #f9fafb;
+    transition: all $transition-fast;
+    
+    &:first-child {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+      font-weight: 800;
+      border-bottom: 3px solid #065f46;
+      
+      .done_test_header {
+        color: #ffffff;
+        font-size: $font-size-base;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+    
+    &:not(:first-child) {
+      &:hover {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, #f3f4f6 100%);
+        transform: translateX(4px);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        border-left: 4px solid #059669;
+        padding-left: calc(#{$spacing-xl} - 4px);
+      }
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .done_test_number {
+      font-weight: 800;
+      font-size: $font-size-xl;
+      color: #ffffff;
+      text-align: center;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      padding: $spacing-sm;
+      border-radius: $border-radius-lg;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+    
+    .done_test_name {
+      font-weight: 700;
+      color: #111827;
+      font-size: $font-size-lg;
+    }
+    
+    .done_test_time {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: $font-size-base;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+      
+      &::before {
+        content: '⏱️';
+        font-size: $font-size-lg;
+      }
+    }
+    
+    .done_test_stats {
+      font-weight: 800;
+      color: #ffffff;
+      font-size: $font-size-lg;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius-lg;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    
+    .done_test_people {
+      // result-block component styles
+    }
+  }
+}

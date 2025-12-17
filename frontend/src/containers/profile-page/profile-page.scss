@@ -1,0 +1,17 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.profile-page {
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(to bottom, $gray-50, $gray-100);
+  padding: $spacing-2xl;
+  
+  &__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    font-size: 1.2rem;
+    color: $text-secondary;
+  }
+}

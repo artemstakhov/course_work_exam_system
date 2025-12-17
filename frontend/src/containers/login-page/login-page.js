@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Button, FormControlLabel, Radio, RadioGroup, Switch, InputLabel, InputAdornment, IconButton, OutlinedInput } from '@mui/material';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { login, register } from '../../store/slices/authSlice';
 
-import './login-page.sass';
+import './login-page.scss';
 
 function LoginForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,6 +18,7 @@ function LoginForm() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = React.useState(false);
+  const { loading } = useSelector(state => state.auth);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -23,41 +26,19 @@ function LoginForm() {
     event.preventDefault();
   };
   
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    if (isRegister) {
-      // Send a POST request for registration
-      axios
-        .post('http://localhost:3002/auth/register', { name, email, password, teacher })
-        .then(() => {
-          setIsRegister(false);
-        })
-        .catch((error) => {
-          if (error.response) {
-            // Error with a server response
-            setError(error.response.data.message);
-          } else {
-            // Other error
-            setError('An error occurred');
-          }
-        });
-    } else {
-      // Send a POST request for login
-      axios
-        .post('http://localhost:3002/auth/login', { email, password })
-        .then(() => {
-          // Redirect to the main page
-          navigate('/');
-        })
-        .catch((error) => {
-          if (error.response) {
-            // Error with a server response
-            setError(error.response.data.message);
-          } else {
-            // Other error
-            setError('An error occurred');
-          }
-        });
+    try {
+      if (isRegister) {
+        await dispatch(register({ name, email, password, teacher })).unwrap();
+        setIsRegister(false);
+        setError('');
+      } else {
+        await dispatch(login({ email, password })).unwrap();
+        navigate('/');
+      }
+    } catch (error) {
+      setError(error.message || 'An error occurred');
     }
   };
   const [errorLength, setErrorLength] = useState(false);

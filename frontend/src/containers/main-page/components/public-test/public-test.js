@@ -1,25 +1,24 @@
 import { Link } from 'react-router-dom';
 import PublicTestItem from '../public-test-item/public-test-item';
-import './public-test.sass';
+import './public-test.scss';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { decodeToken } from 'react-jwt';
 import Cookies from 'js-cookie';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { testService, userService } from '../../../../utils/services';
 
 function PublicTest() {
   const id = decodeToken(Cookies.get('token'))?._id;
   const [testItems, setTestItems] = useState([]);
-  const [user, setUser] = useState([]);
   const [userTests, setUserTests] = useState([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/tests`);
-        setTestItems(response.data);
+        const response = await testService.getAll();
+        setTestItems(response.tests || []);
       } catch (error) {
         console.log(error);
       }
@@ -31,16 +30,18 @@ function PublicTest() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/user/${id}`);
-        setUser(response.data);
-        const passedTestsIds = response.data.passed_tests.map(test => test.test._id);
+        const response = await userService.getById(id);
+        const passedTestsIds = response.user.passed_tests.map(test => test.test._id);
         setUserTests(passedTestsIds);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchUser();
-  }, []);
+    
+    if (id) {
+      fetchUser();
+    }
+  }, [id]);
 
   const handleSnackbarClose = () => {
     setShowSnackbar(false);
@@ -54,32 +55,50 @@ function PublicTest() {
 
   return (
     <div className="public_test_wrapper">
-      <div className="ul_title main_test_title">Публічні тести</div>
+      <div className="public_test_header">
+        <h2 className="public_test_title">Публічні тести</h2>
+        <p className="public_test_subtitle">Оберіть тест і перевірте свої знання</p>
+      </div>
       <ul className="public_test">
-        {testItems.filter(item => item.privateKey.length === 0).map((testItem) => {
+        {testItems.filter(item => !item.privateKey || item.privateKey.length === 0).map((testItem) => {
+          const isPassed = userTests.includes(testItem._id);
           return (
             <Link
-              key={testItem.id}
-              style={{ all: 'unset', width: '23%' }}
-              to={
-                userTests.includes(testItem._id) ? '/' : `/test/${testItem._id}`
-              }
-              className='public_test_item_link'
-              onClick={() => handleLinkClick(testItem._id)}
+              key={testItem._id}
+              to={isPassed ? '#' : `/test/${testItem._id}`}
+              className={`public_test_item_link ${isPassed ? 'disabled' : ''}`}
+              onClick={(e) => {
+                if (isPassed) {
+                  e.preventDefault();
+                  handleLinkClick(testItem._id);
+                }
+              }}
             >
               <PublicTestItem
                 src={testItem.img}
                 alt={`${testItem.title} photo`}
                 title={testItem.title}
                 questions={testItem.questions.length}
+                isPassed={isPassed}
               />
             </Link>
           );
         })}
       </ul>
-      <Snackbar open={showSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
-        <MuiAlert severity="warning" onClose={handleSnackbarClose}>
-          You already passed this test
+      <Snackbar 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={showSnackbar} 
+        autoHideDuration={3000} 
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert 
+          elevation={6}
+          variant="filled"
+          severity="warning" 
+          onClose={handleSnackbarClose}
+          sx={{ borderRadius: 2 }}
+        >
+          Ви вже проходили цей тест
         </MuiAlert>
       </Snackbar>
     </div>

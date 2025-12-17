@@ -1,18 +1,23 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
-import './create-page.sass';
+import './create-page.scss';
 import { decodeToken } from 'react-jwt';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import Header from '../../components/header/header';
 import { Button } from '@mui/material';
+import { createTest } from '../../store/slices/testsSlice';
 
 function CreatePage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const id = decodeToken(Cookies.get('token'))._id;
+  const { loading, error } = useSelector(state => state.tests);
   const [responseError, setResponseError] = useState('');
   const [newTest, setNewTest] = useState({
     title: '',
@@ -151,33 +156,28 @@ function CreatePage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = `http://localhost:3002/user/test/${id}`;
-    console.log(newTest);
-    axios
-      .post(url, newTest)
-      .then((response) => {
-        console.log('Response:', response.data);
-        // Сброс формы
-        setNewTest({
-          title: '',
-          img: '',
-          description: '',
-          privateKey: '',
-          questions: [
-            {
-              text: '',
-              options: [],
-              answer: []
-            }
-          ]
-        });
-      })
-      .catch((error) => {
-        console.error('Error:', error.response.data);
-        setResponseError(error.response.data);
+    try {
+      await dispatch(createTest({ userId: id, testData: newTest })).unwrap();
+      setNewTest({
+        title: '',
+        img: '',
+        description: '',
+        privateKey: '',
+        questions: [
+          {
+            text: '',
+            options: [''],
+            answer: []
+          }
+        ]
       });
+      navigate('/profile');
+    } catch (error) {
+      console.error('Error:', error);
+      setResponseError(error);
+    }
   };
   
   const { title, img, description, privateKey, questions } = newTest;

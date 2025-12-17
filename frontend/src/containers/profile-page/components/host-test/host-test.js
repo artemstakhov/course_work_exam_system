@@ -1,40 +1,33 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ResultBlock from '../../../../components/result-block/result-block';
-import './host-test.sass';
+import './host-test.scss';
 import { decodeToken } from 'react-jwt';
 import Cookies from 'js-cookie';
-import axios from 'axios';
 import { IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getUserById } from '../../../../store/slices/authSlice';
+import { deleteTest } from '../../../../store/slices/testsSlice';
 
 function HostTest() {
-  const [testList, setTestList] = useState([]);
+  const dispatch = useDispatch();
   const id = decodeToken(Cookies.get('token'))?._id;
-  const [userInfo, setUserInfo] = useState(null);
+  const { user } = useSelector(state => state.auth);
   const [deleteTestId, setDeleteTestId] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3002/user/${id}`);
-        setUserInfo(response.data);
-        setTestList(response.data?.created_tests);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchUserInfo();
-  }, [id]);
+    if (id) {
+      dispatch(getUserById(id));
+    }
+  }, [dispatch, id]);
 
   const handleDeleteTest = async () => {
     if (deleteTestId) {
       try {
-        await axios.delete(`http://localhost:3002/tests/${deleteTestId}`);
-        // Обновить список тестов после удаления
-        setTestList(prevTestList => prevTestList.filter(test => test._id !== deleteTestId));
+        await dispatch(deleteTest(deleteTestId)).unwrap();
+        dispatch(getUserById(id));
         closeDialog();
       } catch (error) {
         console.log(error);
@@ -52,7 +45,8 @@ function HostTest() {
     setDeleteTestId(null);
   };
 
-  testList?.sort((a, b) => b.date - a.date); // Сортируем по дате в обратном порядке
+  const testList = user?.created_tests;
+  const sortedTestList = testList ? [...testList].sort((a, b) => b.date - a.date) : [];
 
   return (
     <div className="host_test_wrapper">
@@ -64,7 +58,7 @@ function HostTest() {
           <div className="host_test_stats host_test_header">К-сть запитань</div>
           <div className="host_test_people host_test_header">К-сть учасників</div>
         </li>
-        {testList?.map((item, index) => (
+        {sortedTestList?.map((item, index) => (
           <li className="host_test_item" key={index}>
             <div className="host_test_number"><span>{index + 1}</span></div>
             <div className="host_test_name"><span>{item.title}</span></div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import './result-block.scss';
 
 const ResultBlock = ({ percentage }) => {
   const leftPercentage = percentage;

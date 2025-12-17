@@ -1,0 +1,7 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.test-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, $gray-50, $gray-100);
+}

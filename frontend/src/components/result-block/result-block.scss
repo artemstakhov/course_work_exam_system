@@ -1,0 +1,37 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.result_block {
+  display: flex;
+  height: 30px;
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+  position: relative;
+  
+  .result-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+    font-weight: 600;
+    font-size: $font-size-sm;
+    transition: all $transition-base;
+    position: relative;
+    
+    &.correct {
+      background: linear-gradient(90deg, $success-color, darken($success-color, 10%));
+    }
+    
+    &.incorrect {
+      background: linear-gradient(90deg, $danger-color, darken($danger-color, 10%));
+    }
+    
+    .percentage {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+  }
+}

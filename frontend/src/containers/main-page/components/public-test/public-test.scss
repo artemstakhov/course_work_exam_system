@@ -1,0 +1,61 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.public_test_wrapper {
+  padding: $spacing-3xl $spacing-2xl;
+  max-width: 1400px;
+  margin: 0 auto;
+  
+  .public_test_header {
+    text-align: center;
+    margin-bottom: $spacing-3xl;
+  }
+  
+  .public_test_title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-sm;
+    letter-spacing: -0.5px;
+  }
+  
+  .public_test_subtitle {
+    font-size: 1.1rem;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+}
+
+.public_test {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $spacing-2xl;
+  padding: 0;
+  list-style: none;
+  
+  @include respond-to('md') {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+  
+  @include respond-to('lg') {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.public_test_item_link {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.3s ease;
+  
+  &:not(.disabled):hover {
+    transform: translateY(-8px);
+  }
+  
+  &.disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+}

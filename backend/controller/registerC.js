@@ -1,98 +1,128 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../model/user.js";
+import { config } from "../config/config.js";
+import { AppError } from "../middleware/error.middleware.js";
 
-export const register = async (reg, res) => {
+export const register = async (req, res, next) => {
   try {
-    const email = reg.body.email;
-    const InUse = await User.findOne({ email });
-    if (InUse) return res.status(400).json({ message: "Email olready exist" });
-    const password = reg.body.password;
+    const { email, password, name, teacher } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new AppError("Email вже використовується", 400);
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const doc = new User({
-      name: reg.body.name,
-      teacher:reg.body.teacher,
+    const user = new User({
+      name,
+      teacher: teacher || false,
       email,
-      password:passwordHash,
+      password: passwordHash,
     });
 
-    const user = await doc.save();
+    await user.save();
 
     const token = jwt.sign(
       {
         _id: user._id,
-        teacher: user.teacher
+        teacher: user.teacher,
+        name: user.name
       },
-      "secret123",
+      config.jwt.secret,
       {
-        expiresIn: "30d",
+        expiresIn: config.jwt.expiresIn,
       }
     );
 
-    res.json({
-      ...user._doc,
-      token,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Не вдалося зареєструватися",
-    });
-  }
-
-};
-
-export const login = async (reg, res) => {
-  try {
-    const user = await User.findOne({ email: reg.body.email });
-    if (!user) return res.status(400).json({ message: "Перевірте чи коректно введені дані" });
-    const isPasswordCorrect = await bcrypt.compare(reg.body.password, user.password);
-    if (!isPasswordCorrect) res.status(400).json({ message: "Перевірте чи коректно введені дані" })
-
-    const token = jwt.sign(
-      {
-        _id: user._id,
-        teacher: user.teacher
-      },
-      "secret123",
-      {
-        expiresIn: "30d",
-      }
-    );
-
-   res
+    res
       .cookie("token", token, {
         httpOnly: false,
+        secure: false,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      })
+      .status(201)
+      .json({
+        success: true,
+        message: "Реєстрація успішна",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          teacher: user.teacher,
+        },
+        token,
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new AppError("Перевірте чи коректно введені дані", 400);
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      throw new AppError("Перевірте чи коректно введені дані", 400);
+    }
+
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        teacher: user.teacher,
+        name: user.name
+      },
+      config.jwt.secret,
+      {
+        expiresIn: config.jwt.expiresIn,
+      }
+    );
+
+    res
+      .cookie("token", token, {
+        httpOnly: false,
+        secure: false,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       })
       .status(200)
       .json({
-        message: "OK",
+        success: true,
+        message: "Вхід успішний",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          teacher: user.teacher,
+        },
+        token,
       });
-
-  }
-  catch (err) {
-    res.status(500).json({
-      message: "Не вдалося увійти",
-    });
-    console.log(err);
+  } catch (err) {
+    next(err);
   }
 };
-export const logout = (req, res) => {
-  
-  const token = req.headers.authorization || req.query.token || req.body.token;
 
-  if (!token) {
-    return res.status(401).json({ message: "Токен відсутній" });
-  }
-
+export const logout = (req, res, next) => {
   try {
-   
-    const decodedToken = jwt.verify(token, "secret123");
-
-    res.json({ message: "Логаут успішний" });
+    res
+      .clearCookie("token")
+      .status(200)
+      .json({ 
+        success: true,
+        message: "Вихід успішний" 
+      });
   } catch (err) {
-    res.status(401).json({ message: "Недійсний токен" });
+    next(err);
   }
 };

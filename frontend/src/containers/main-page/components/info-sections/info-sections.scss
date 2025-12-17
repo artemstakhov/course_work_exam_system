@@ -1,0 +1,182 @@
+@import '../../../../styles/variables';
+@import '../../../../styles/mixins';
+
+.info-sections {
+  margin-top: $spacing-3xl;
+}
+
+.info-section {
+  padding: $spacing-3xl $spacing-2xl;
+  
+  &--students {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  }
+  
+  &--teachers {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  }
+  
+  &--about {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
+  
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-3xl;
+  }
+  
+  &__icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-lg;
+  }
+  
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-md;
+    letter-spacing: -0.5px;
+  }
+  
+  &__subtitle {
+    font-size: 1.2rem;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+  
+  &__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: $spacing-2xl;
+    
+    @include respond-to('lg') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  &__content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-3xl;
+    align-items: center;
+    
+    @include respond-to('md') {
+      grid-template-columns: 1fr;
+      gap: $spacing-2xl;
+    }
+  }
+  
+  &__text {
+    .info-section__title {
+      text-align: left;
+      margin-bottom: $spacing-xl;
+    }
+  }
+  
+  &__description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: $text-secondary;
+    margin-bottom: $spacing-lg;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-xl;
+    
+    @include respond-to('sm') {
+      grid-template-columns: 1fr;
+      gap: $spacing-lg;
+    }
+  }
+}
+
+.feature-card {
+  background: white;
+  padding: $spacing-2xl;
+  border-radius: $border-radius-xl;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+  
+  &__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: $border-radius-lg;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: $spacing-lg;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+  }
+  
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $gray-900;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: $text-secondary;
+  }
+}
+
+.stat-item {
+  text-align: center;
+  padding: $spacing-2xl;
+  background: white;
+  border-radius: $border-radius-xl;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 48px rgba(99, 102, 241, 0.15);
+  }
+  
+  &__value {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: $spacing-sm;
+    line-height: 1;
+  }
+  
+  &__label {
+    font-size: 1rem;
+    color: $text-secondary;
+    font-weight: 600;
+  }
+}
